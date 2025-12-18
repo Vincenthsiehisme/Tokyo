@@ -3,7 +3,7 @@ import { TravelMode } from '../types';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const modelName = 'gemini-2.5-flash';
+const modelName = 'gemini-3-flash-preview';
 
 // Helper to clean markdown code blocks from JSON response
 const cleanJson = (text: string) => {
