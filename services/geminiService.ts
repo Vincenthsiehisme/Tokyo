@@ -3,6 +3,7 @@ import { TravelMode } from '../types';
 
 // Safely initialize. If key is missing, we won't crash immediately, 
 // but API calls will fail gracefully inside the try-catch blocks below.
+// Ensure we handle the case where process.env.API_KEY might be undefined string from vite define
 const apiKey = process.env.API_KEY || 'DUMMY_KEY_FOR_BUILD'; 
 const ai = new GoogleGenAI({ apiKey });
 
@@ -23,7 +24,17 @@ export const getRouteInfo = async (
     // Check if the key is the dummy key or empty
     if (!process.env.API_KEY || process.env.API_KEY === 'DUMMY_KEY_FOR_BUILD') {
       console.warn("API Key is missing or invalid, skipping Gemini call.");
-      throw new Error("API Key is missing");
+      // Instead of throwing immediately, return a mock response to keep UI alive
+      return {
+        transitInfo: {
+          mode: TravelMode.TRAIN,
+          duration: "需設定API Key",
+          lineName: "API Key 未設定",
+          instructions: "請在 .env 檔案中設定您的 Google Gemini API Key 以啟用即時規劃功能。",
+          cost: "---"
+        },
+        notes: "系統偵測到 API Key 遺失。"
+      };
     }
 
     const prompt = `
