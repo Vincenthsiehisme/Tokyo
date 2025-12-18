@@ -20,7 +20,9 @@ export const getRouteInfo = async (
 ) => {
   try {
     // Runtime check before making the call
-    if (!process.env.API_KEY) {
+    // Check if the key is the dummy key or empty
+    if (!process.env.API_KEY || process.env.API_KEY === 'DUMMY_KEY_FOR_BUILD') {
+      console.warn("API Key is missing or invalid, skipping Gemini call.");
       throw new Error("API Key is missing");
     }
 
@@ -86,7 +88,7 @@ export const suggestSplitPlan = async (
 ) => {
   try {
      // Runtime check before making the call
-    if (!process.env.API_KEY) {
+    if (!process.env.API_KEY || process.env.API_KEY === 'DUMMY_KEY_FOR_BUILD') {
       throw new Error("API Key is missing");
     }
 
