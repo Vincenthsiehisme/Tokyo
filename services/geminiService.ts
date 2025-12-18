@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { TravelMode } from '../types';
 
 // Support both build-time and runtime environment variables
@@ -16,9 +16,11 @@ const getApiKey = () => {
 };
 
 const apiKey = getApiKey();
-const ai = apiKey && apiKey !== 'DUMMY_KEY_FOR_BUILD' ? new GoogleGenAI({ apiKey }) : null;
+const genAI = apiKey && apiKey !== 'DUMMY_KEY_FOR_BUILD' 
+  ? new GoogleGenerativeAI(apiKey) 
+  : null;
 
-const modelName = 'gemini-3-flash-preview';
+const modelName = 'gemini-1.5-flash';
 
 const cleanJson = (text: string) => {
   return text.replace(/```json\s*|\s*```/g, '').trim();
@@ -30,7 +32,7 @@ export const getRouteInfo = async (
   time: string
 ) => {
   try {
-    if (!ai || !apiKey || apiKey === 'DUMMY_KEY_FOR_BUILD') {
+    if (!genAI || !apiKey || apiKey === 'DUMMY_KEY_FOR_BUILD') {
       console.warn("API Key is missing or invalid, returning mock data.");
       return {
         transitInfo: {
@@ -43,6 +45,8 @@ export const getRouteInfo = async (
         notes: "系統偵測到 API Key 遺失。"
       };
     }
+
+    const model = genAI.getGenerativeModel({ model: modelName });
 
     const prompt = `
       你是專業的東京導遊。請規劃從東京的 "${origin}" 到 "${destination}" 的最佳交通路線。
@@ -67,19 +71,15 @@ export const getRouteInfo = async (
       }
     `;
 
-    const response = await ai.models.generateContent({
-      model: modelName,
-      contents: prompt,
-      config: {
-        tools: [{ googleSearch: {} }], 
-      },
-    });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-    if (!response.text) {
+    if (!text) {
       throw new Error("No response text from Gemini");
     }
 
-    return JSON.parse(cleanJson(response.text));
+    return JSON.parse(cleanJson(text));
   } catch (error) {
     console.error("Gemini Route Error:", error);
     return {
@@ -102,9 +102,11 @@ export const suggestSplitPlan = async (
   availableTime: string
 ) => {
   try {
-    if (!ai || !apiKey || apiKey === 'DUMMY_KEY_FOR_BUILD') {
+    if (!genAI || !apiKey || apiKey === 'DUMMY_KEY_FOR_BUILD') {
       throw new Error("API Key is missing");
     }
+
+    const model = genAI.getGenerativeModel({ model: modelName });
 
     const prompt = `
       我們現在在東京的 "${origin}"。我們有 ${availableTime} 小時的時間。
@@ -128,21 +130,17 @@ export const suggestSplitPlan = async (
       }
     `;
 
-    const response = await ai.models.generateContent({
-      model: modelName,
-      contents: prompt,
-      config: {
-        tools: [{ googleSearch: {} }],
-      },
-    });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-    if (!response.text) {
+    if (!text) {
       throw new Error("No response text from Gemini");
     }
 
-    return JSON.parse(cleanJson(response.text));
+    return JSON.parse(cleanJson(text));
   } catch (error) {
     console.error("Gemini Split Error:", error);
-    throw new Error("無法生成分頭行程,請稍後再試。");
+    throw new Error("無法生成分頭行程，請稍後再試。");
   }
 };
