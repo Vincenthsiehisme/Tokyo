@@ -1,15 +1,25 @@
 import { GoogleGenAI } from "@google/genai";
 import { TravelMode } from '../types';
 
-// Safely initialize. If key is missing, we won't crash immediately, 
-// but API calls will fail gracefully inside the try-catch blocks below.
-// Ensure we handle the case where process.env.API_KEY might be undefined string from vite define
-const apiKey = process.env.API_KEY || 'DUMMY_KEY_FOR_BUILD'; 
-const ai = new GoogleGenAI({ apiKey });
+// Support both build-time and runtime environment variables
+const getApiKey = () => {
+  // @ts-ignore - Vite injects import.meta.env at build time
+  if (typeof import !== 'undefined' && import.meta?.env?.VITE_API_KEY) {
+    // @ts-ignore
+    return import.meta.env.VITE_API_KEY;
+  }
+  // Fallback to process.env for SSR/build
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.VITE_API_KEY || process.env.API_KEY || '';
+  }
+  return '';
+};
+
+const apiKey = getApiKey();
+const ai = apiKey && apiKey !== 'DUMMY_KEY_FOR_BUILD' ? new GoogleGenAI({ apiKey }) : null;
 
 const modelName = 'gemini-3-flash-preview';
 
-// Helper to clean markdown code blocks from JSON response
 const cleanJson = (text: string) => {
   return text.replace(/```json\s*|\s*```/g, '').trim();
 };
@@ -20,17 +30,14 @@ export const getRouteInfo = async (
   time: string
 ) => {
   try {
-    // Runtime check before making the call
-    // Check if the key is the dummy key or empty
-    if (!process.env.API_KEY || process.env.API_KEY === 'DUMMY_KEY_FOR_BUILD') {
-      console.warn("API Key is missing or invalid, skipping Gemini call.");
-      // Instead of throwing immediately, return a mock response to keep UI alive
+    if (!ai || !apiKey || apiKey === 'DUMMY_KEY_FOR_BUILD') {
+      console.warn("API Key is missing or invalid, returning mock data.");
       return {
         transitInfo: {
           mode: TravelMode.TRAIN,
           duration: "需設定API Key",
           lineName: "API Key 未設定",
-          instructions: "請在 .env 檔案中設定您的 Google Gemini API Key 以啟用即時規劃功能。",
+          instructions: "請在 Vercel 環境變數中設定 VITE_API_KEY 以啟用即時規劃功能。",
           cost: "---"
         },
         notes: "系統偵測到 API Key 遺失。"
@@ -64,8 +71,6 @@ export const getRouteInfo = async (
       model: modelName,
       contents: prompt,
       config: {
-        // responseMimeType and responseSchema are NOT supported when using tools (googleSearch)
-        // We rely on the prompt to enforce JSON structure.
         tools: [{ googleSearch: {} }], 
       },
     });
@@ -77,7 +82,6 @@ export const getRouteInfo = async (
     return JSON.parse(cleanJson(response.text));
   } catch (error) {
     console.error("Gemini Route Error:", error);
-    // Fallback mock for safety if API fails
     return {
       transitInfo: {
         mode: TravelMode.TRAIN,
@@ -98,8 +102,7 @@ export const suggestSplitPlan = async (
   availableTime: string
 ) => {
   try {
-     // Runtime check before making the call
-    if (!process.env.API_KEY || process.env.API_KEY === 'DUMMY_KEY_FOR_BUILD') {
+    if (!ai || !apiKey || apiKey === 'DUMMY_KEY_FOR_BUILD') {
       throw new Error("API Key is missing");
     }
 
@@ -140,7 +143,6 @@ export const suggestSplitPlan = async (
     return JSON.parse(cleanJson(response.text));
   } catch (error) {
     console.error("Gemini Split Error:", error);
-    // Return a structured error fallback or throw
-    throw new Error("無法生成分頭行程，請稍後再試。");
+    throw new Error("無法生成分頭行程,請稍後再試。");
   }
 };
