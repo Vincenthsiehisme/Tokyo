@@ -1,7 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 import { TravelMode } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Safely initialize. If key is missing, we won't crash immediately, 
+// but API calls will fail gracefully inside the try-catch blocks below.
+const apiKey = process.env.API_KEY || 'DUMMY_KEY_FOR_BUILD'; 
+const ai = new GoogleGenAI({ apiKey });
 
 const modelName = 'gemini-3-flash-preview';
 
@@ -16,6 +19,11 @@ export const getRouteInfo = async (
   time: string
 ) => {
   try {
+    // Runtime check before making the call
+    if (!process.env.API_KEY) {
+      throw new Error("API Key is missing");
+    }
+
     const prompt = `
       你是專業的東京導遊。請規劃從東京的 "${origin}" 到 "${destination}" 的最佳交通路線。
       假設當前時間：${time}。
@@ -62,7 +70,7 @@ export const getRouteInfo = async (
         mode: TravelMode.TRAIN,
         duration: "未知",
         lineName: "請查詢地圖",
-        instructions: "無法取得路線資訊，請檢查網路連線。",
+        instructions: "無法取得路線資訊，請檢查網路連線或 API 設定。",
         cost: "---"
       },
       notes: "暫時無法規劃路線。"
@@ -77,6 +85,11 @@ export const suggestSplitPlan = async (
   availableTime: string
 ) => {
   try {
+     // Runtime check before making the call
+    if (!process.env.API_KEY) {
+      throw new Error("API Key is missing");
+    }
+
     const prompt = `
       我們現在在東京的 "${origin}"。我們有 ${availableTime} 小時的時間。
       請規劃分頭行動的行程：
