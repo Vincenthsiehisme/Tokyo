@@ -11,13 +11,13 @@ const HOTEL_LOCATION: Location = {
   japaneseAddress: '東京都港区新橋6-4-1' 
 };
 
-// NEW: Day 5 固定地點
+// Day 5 固定地點 - 修正版
 const NARITA_AIRPORT_T1: Location = {
   id: 'nrt-t1',
   name: '成田機場 T1',
   address: 'Narita International Airport Terminal 1',
   japaneseName: '成田空港 第1ターミナル',
-  japaneseAddress: '千葉県成田市三里塚御料牧場1-1'
+  japaneseAddress: '千葉県成田市古込1-1'  // ✅ 修正：使用正確的現代地址
 };
 
 const JR_NARITA_STATION: Location = {
@@ -399,7 +399,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
 ];
 
 // Version control for storage
-const DATA_VERSION = 'v18'; 
+const DATA_VERSION = 'v19';  // ✅ 版本號更新
 const STORAGE_KEY = 'tokyo_sync_data_master'; 
 
 export default function App() {
@@ -466,7 +466,7 @@ export default function App() {
     return parentSplitPrevious || HOTEL_LOCATION;
   };
 
-  // NEW: Warning Level 視覺樣式
+  // Warning Level 視覺樣式
   const getWarningStyle = (level?: 'normal' | 'caution' | 'critical') => {
     switch(level) {
       case 'critical':
@@ -490,7 +490,7 @@ export default function App() {
     }
   };
 
-  // NEW: 計算距離死線還有多久
+  // 計算距離死線還有多久
   const getTimeUntilDeadline = (deadlineTime: string) => {
     const [h, m] = deadlineTime.split(':').map(Number);
     const deadline = new Date();
@@ -574,7 +574,6 @@ export default function App() {
       }
     }
 
-    // 使用 warningLevel 決定樣式
     const warningStyles = getWarningStyle(item.warningLevel);
     let dotClass = warningStyles.dotClass;
     let cardClass = warningStyles.cardClass;
@@ -605,7 +604,6 @@ export default function App() {
         className={`relative pl-8 group transition-opacity duration-500 ${isPast && !isActive ? 'opacity-50' : 'opacity-100'}`} 
         onClick={() => setSelectedItem(item)}
       >
-        {/* 🔧 修改：圓點加上 z-20 */}
         <div className={`absolute left-[0px] rounded-full border-2 border-white shadow-sm transition-transform group-hover:scale-125 z-20 ${dotClass} ${isActive ? 'animate-pulse scale-110 ring-4 ring-blue-100' : ''}`}></div>
         
         {item.type === 'transit' && item.transitInfo ? (
@@ -633,7 +631,6 @@ export default function App() {
            </div>
         ) : (
           <div className={`relative rounded-xl border overflow-hidden cursor-pointer transition-all active:scale-[0.98] ${cardClass} ${isActive ? 'border-tokyo-blue ring-2 ring-tokyo-blue/10' : ''}`}>
-            {/* Strict Deadline Badge */}
             {item.strictDeadline && (
               <div className="absolute top-0 left-0 right-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 flex items-center gap-1 justify-center z-20">
                 <ShieldAlert className="w-3 h-3" />
@@ -721,7 +718,6 @@ export default function App() {
       <div className="flex-1 overflow-y-auto px-4 pt-6 relative">
         {filteredItems.length === 0 ? <div className="text-center py-12 text-gray-400"><p>這一天沒有行程</p></div> : (
           <div className="relative pl-4 space-y-6">
-            {/* 🔧 修改：主時間線改為 -z-10 */}
             <div className="absolute left-4 top-2 bottom-4 w-[1.5px] bg-slate-200/80 -z-10"></div>
             
             {filteredItems.map((item, index) => {
@@ -760,7 +756,6 @@ export default function App() {
                     </div>
                     
                     <div className="relative pb-6 px-2">
-                       {/* 🔧 修改：Split 時間線改為 -z-10 */}
                        <div className={`absolute left-[18px] top-2 bottom-4 w-[1.5px] -z-10 ${activeTab === 0 ? 'bg-purple-200' : 'bg-indigo-200'}`}></div>
                        
                        <div className="space-y-6 mt-2">
@@ -801,7 +796,6 @@ export default function App() {
             </div>
 
             <div className="p-6 overflow-y-auto">
-              {/* Deadline Countdown */}
               {selectedItem.strictDeadline && selectedItem.endTime && (
                 <div className="mb-6 bg-red-50 border-2 border-red-300 p-4 rounded-xl">
                   <div className="flex items-start gap-3">
@@ -822,7 +816,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* Last Train Warning */}
               {selectedItem.transitInfo?.lastTrain && (
                 <div className="mb-6 bg-red-50 border border-red-200 p-4 rounded-xl flex gap-3">
                   <ShieldAlert className="w-6 h-6 text-red-500 shrink-0" />
@@ -833,7 +826,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* A to B Navigation */}
               {selectedItem.location && (
                 <div className="mb-6">
                   <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">A to B 智慧導航</h4>
