@@ -11,29 +11,29 @@ const HOTEL_LOCATION: Location = {
   japaneseAddress: '東京都港区新橋6-4-1' 
 };
 
-// Day 5 固定地點 - 修正版
+// Day 5 固定地點 - 完整英文地址版
 const NARITA_AIRPORT_T1: Location = {
   id: 'nrt-t1',
   name: '成田機場 T1',
-  address: 'Narita International Airport Terminal 1',
+  address: '1-1 Furugome, Narita, Chiba 282-0004, Japan',  // ✅ 使用完整英文地址
   japaneseName: '成田空港 第1ターミナル',
-  japaneseAddress: '千葉県成田市古込1-1'
+  japaneseAddress: '〒282-0004 千葉県成田市古込1-1'  // ✅ 加上郵遞區號
 };
 
 const JR_NARITA_STATION: Location = {
   id: 'jr-narita',
   name: 'JR 成田站',
-  address: 'JR Narita Station',
+  address: '839 Hanazakicho, Narita, Chiba 286-0033, Japan',
   japaneseName: 'JR成田駅',
-  japaneseAddress: '千葉県成田市花崎町839'
+  japaneseAddress: '〒286-0033 千葉県成田市花崎町839'
 };
 
 const CHOMEISEN_RESTAURANT: Location = {
   id: 'chomeisen',
   name: '長命泉 (蔵元直営店)',
-  address: '千葉県成田市上町540',
+  address: '540 Kamicho, Narita, Chiba 286-0011, Japan',
   japaneseName: '長命泉',
-  japaneseAddress: '千葉県成田市上町540'
+  japaneseAddress: '〒286-0011 千葉県成田市上町540'
 };
 
 // Data filled with precise Start/End times for seamless transitions
@@ -357,7 +357,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
     startTime: '11:45',
     endTime: '13:20',
     location: CHOMEISEN_RESTAURANT,
-    notes: '⚠️ 清酒試飲 & 鰻魚飯（13:20 必須離開）',
+    notes: '清酒（13:20 必須離開）',
     details: '**長命泉酒藏直營店：**\n• 地點：成田山表參道（JR 成田站東口徒步 10 分）\n• 推薦：清酒試飲套組 + 鰻魚飯套餐\n• 營業時間：10:00-17:00\n\n⚠️ **絕對撤退時間：13:20**\n• 13:20 必須結帳離開餐廳\n• 13:35 前走回 JR 成田站\n• 逾時將無法趕上 Peach 15:40 關櫃！',
     strictDeadline: '13:20 必須出發',
     warningLevel: 'critical'
@@ -373,12 +373,12 @@ const PRESET_ITINERARY: ItineraryItem[] = [
       mode: TravelMode.TRAIN,
       duration: '約 30-40 分',
       lineName: 'JR 成田線',
-      direction: '往 成田空港',  // ✅ 修正：從「往 空港第2ビル」改為「往 成田空港」
+      direction: '往 成田空港',
       instructions: '1. 步行回 JR 成田站（15 分內）\n2. 搭乘成田線回機場 T1（11-16 分）\n3. 前往 B1 置物櫃取行李（15 分）\n4. 搭電梯至 T1 國際線 4F 出境大廳\n5. 14:00 前務必抵達 Peach 櫃檯',
       cost: '¥260',
       lastTrain: '13:48'
     },
-    notes: '⚠️ 返回機場 T1（14:00 前抵達）',
+    notes: '返回機場 T1（14:00 前抵達）',
     details: '**重要提醒：**\n• 最晚搭乘班次：13:48 發車\n• 建議搭乘：13:35-13:40 之間班次\n• 給予取行李 + 移動的緩衝時間',
     strictDeadline: '13:48 最後班車',
     warningLevel: 'critical'
@@ -391,7 +391,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
     endTime: '16:30',
     isReservation: true,
     location: NARITA_AIRPORT_T1,
-    notes: '🍑 Peach 樂桃航空報到 & 登機',
+    notes: '報到 & 登機',
     details: '**Peach MM626 航班資訊：**\n• 航班：MM626 成田 (NRT) → 桃園 (TPE)\n• 報到櫃檯：T1 南翼 4F (Check-in Counter L)\n• 開櫃時間：14:00\n• ⚠️ **關櫃時間：15:40（嚴格執行，逾時無法登機）**\n• 登機時間：16:00\n• 起飛時間：16:30\n\n**建議流程：**\n1. 14:00-14:30：報到 + 託運行李\n2. 14:30-15:00：通過安檢\n3. 15:00-15:30：通過海關 + 逛免稅店\n4. 15:30-16:00：前往登機門候機\n5. 16:00：開始登機\n\n⚠️ **Peach 為廉航，準點要求嚴格！**\n建議 14:30 前完成報到手續。',
     strictDeadline: '15:40 關櫃（嚴格執行）',
     warningLevel: 'critical'
@@ -399,7 +399,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
 ];
 
 // Version control for storage
-const DATA_VERSION = 'v20';  // ✅ 版本號更新（從 v19 → v20）
+const DATA_VERSION = 'v21';  // ✅ 版本號更新（從 v20 → v21）
 const STORAGE_KEY = 'tokyo_sync_data_master'; 
 
 export default function App() {
