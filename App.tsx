@@ -15,9 +15,9 @@ const HOTEL_LOCATION: Location = {
 const NARITA_AIRPORT_T1: Location = {
   id: 'nrt-t1',
   name: '成田機場 T1',
-  address: '1-1 Furugome, Narita, Chiba 282-0004, Japan',  // ✅ 使用完整英文地址
+  address: '1-1 Furugome, Narita, Chiba 282-0004, Japan',
   japaneseName: '成田空港 第1ターミナル',
-  japaneseAddress: '〒282-0004 千葉県成田市古込1-1'  // ✅ 加上郵遞區號
+  japaneseAddress: '〒282-0004 千葉県成田市古込1-1'
 };
 
 const JR_NARITA_STATION: Location = {
@@ -308,14 +308,14 @@ const PRESET_ITINERARY: ItineraryItem[] = [
     day: 5,
     type: 'transit',
     startTime: '08:30',
-    endTime: '10:15',
+    endTime: '09:58',  // ✅ 修正：更新為精確到達時間
     location: NARITA_AIRPORT_T1,
     transitInfo: {
       mode: TravelMode.TRAIN,
-      duration: '約 105 分',
+      duration: '約 88 分',  // ✅ 修正：更新為精確時長
       lineName: 'JR 山手線 → N\'EX',
       direction: '往 成田機場',
-      instructions: '1. 新橋站搭 JR 山手線至東京站 (約 10 分)\n2. 東京站轉乘 N\'EX 成田特快 (約 60 分)\n3. 抵達成田機場 T1 地下車站 (10:15)',
+      instructions: '1. 08:30 從飯店出發 → 新橋站\n2. 新橋 → 東京（JR 山手線，約 10 分）\n3. 東京 09:00 發車（成田エクスプレス）\n4. 09:58 抵達 成田空港（T1/第1航廈車站）',  // ✅ 修正：詳細班次資訊
       cost: '¥3,070'
     },
     notes: '前往成田機場 T1',
@@ -325,8 +325,8 @@ const PRESET_ITINERARY: ItineraryItem[] = [
     id: 'd5-luggage-storage',
     day: 5,
     type: 'visit',
-    startTime: '10:15',
-    endTime: '11:15',
+    startTime: '10:00',  // ✅ 修正：配合新到達時間調整
+    endTime: '11:00',
     location: NARITA_AIRPORT_T1,
     notes: '⚠️ 寄放行李（大型置物櫃）',
     details: '**置物櫃攻略：**\n• 位置：T1 地下車站出口附近（B1F）\n• 大型行李櫃：600-700 円 / 日\n• 前 6 小時最划算\n• ⚠️ 記得拍照櫃號與位置！\n• 建議尋找靠近電梯的櫃位，回程取行李較方便',
@@ -336,8 +336,8 @@ const PRESET_ITINERARY: ItineraryItem[] = [
     id: 'd5-transit-narita-city',
     day: 5,
     type: 'transit',
-    startTime: '11:15',
-    endTime: '11:35',
+    startTime: '11:00',  // ✅ 修正：配合新時間調整
+    endTime: '11:20',
     location: JR_NARITA_STATION,
     transitInfo: {
       mode: TravelMode.TRAIN,
@@ -354,10 +354,10 @@ const PRESET_ITINERARY: ItineraryItem[] = [
     id: 'd5-chomeisen-lunch',
     day: 5,
     type: 'visit',
-    startTime: '11:45',
+    startTime: '11:30',  // ✅ 修正：配合新時間調整
     endTime: '13:20',
     location: CHOMEISEN_RESTAURANT,
-    notes: '清酒（13:20 必須離開）',
+    notes: '⚠️ 清酒試飲 & 鰻魚飯（13:20 必須離開）',
     details: '**長命泉酒藏直營店：**\n• 地點：成田山表參道（JR 成田站東口徒步 10 分）\n• 推薦：清酒試飲套組 + 鰻魚飯套餐\n• 營業時間：10:00-17:00\n\n⚠️ **絕對撤退時間：13:20**\n• 13:20 必須結帳離開餐廳\n• 13:35 前走回 JR 成田站\n• 逾時將無法趕上 Peach 15:40 關櫃！',
     strictDeadline: '13:20 必須出發',
     warningLevel: 'critical'
@@ -378,7 +378,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
       cost: '¥260',
       lastTrain: '13:48'
     },
-    notes: '返回機場 T1（14:00 前抵達）',
+    notes: '⚠️ 返回機場 T1（14:00 前抵達）',
     details: '**重要提醒：**\n• 最晚搭乘班次：13:48 發車\n• 建議搭乘：13:35-13:40 之間班次\n• 給予取行李 + 移動的緩衝時間',
     strictDeadline: '13:48 最後班車',
     warningLevel: 'critical'
@@ -391,15 +391,15 @@ const PRESET_ITINERARY: ItineraryItem[] = [
     endTime: '16:30',
     isReservation: true,
     location: NARITA_AIRPORT_T1,
-    notes: '報到 & 登機',
-    details: '**Peach MM626 航班資訊：**\n• 航班：MM626 成田 (NRT) → 桃園 (TPE)\n• 報到櫃檯：T1 南翼 4F (Check-in Counter L)\n• 開櫃時間：14:00\n• ⚠️ **關櫃時間：15:40（嚴格執行，逾時無法登機）**\n• 登機時間：16:00\n• 起飛時間：16:30\n\n**建議流程：**\n1. 14:00-14:30：報到 + 託運行李\n2. 14:30-15:00：通過安檢\n3. 15:00-15:30：通過海關 + 逛免稅店\n4. 15:30-16:00：前往登機門候機\n5. 16:00：開始登機\n\n⚠️ **Peach 為廉航，準點要求嚴格！**\n建議 14:30 前完成報到手續。',
+    notes: '🍑 Peach 樂桃航空報到 & 登機',
+    details: '**Peach MM626 航班資訊：**\n• 航班：MM626 成田 (NRT) → 桃園 (TPE)\n• 報到櫃檯：成田空港 第1ターミナル 北側 4F（當日以現場螢幕/指示為準）\n• 報到開始：起飛前 2 小時（16:30 起飛則 14:30 起）\n• 關櫃截止：起飛前 50 分（16:30 起飛則 15:40 截止）\n• 登機時間：16:00\n• 起飛時間：16:30\n\n**建議流程：**\n1. 14:30-15:00：報到 + 託運行李\n2. 15:00-15:20：通過安檢\n3. 15:20-15:40：通過海關\n4. 15:40-16:00：前往登機門候機\n5. 16:00：開始登機\n\n建議在 15:10 前完成報到手續，避免臨時排隊風險。',  // ✅ 修正：更新為詳細航班資訊
     strictDeadline: '15:40 關櫃（嚴格執行）',
     warningLevel: 'critical'
   }
 ];
 
 // Version control for storage
-const DATA_VERSION = 'v21';  // ✅ 版本號更新（從 v20 → v21）
+const DATA_VERSION = 'v22';  // ✅ 版本號更新（從 v21 → v22）
 const STORAGE_KEY = 'tokyo_sync_data_master'; 
 
 export default function App() {
@@ -466,7 +466,6 @@ export default function App() {
     return parentSplitPrevious || HOTEL_LOCATION;
   };
 
-  // Warning Level 視覺樣式
   const getWarningStyle = (level?: 'normal' | 'caution' | 'critical') => {
     switch(level) {
       case 'critical':
@@ -490,7 +489,6 @@ export default function App() {
     }
   };
 
-  // 計算距離死線還有多久
   const getTimeUntilDeadline = (deadlineTime: string) => {
     const [h, m] = deadlineTime.split(':').map(Number);
     const deadline = new Date();
