@@ -618,7 +618,6 @@ export default function App() {
                      <RouteCard info={item.transitInfo} startTime={item.startTime} />
                   </div>
                   {item.location && (
-                     {/* 🔧 修改：RouteCard 按鈕改為 z-30 */}
                      <button 
                        className="shrink-0 w-8 h-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-tokyo-blue hover:border-tokyo-blue shadow-sm transition-colors z-30"
                        onClick={(e) => {
@@ -670,7 +669,6 @@ export default function App() {
             </div>
             
             {item.location && (
-               {/* 🔧 修改：卡片右下按鈕改為 z-30 */}
                <div className="absolute bottom-3 right-3 flex gap-2 z-30">
                  <button 
                    className="w-8 h-8 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center shadow-sm border border-slate-200 hover:bg-slate-100 active:scale-90 transition-all" 
