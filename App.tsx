@@ -16,7 +16,7 @@ const HOTEL_LOCATION: Location = {
 const PRESET_ITINERARY: ItineraryItem[] = [
   // --- Day 1: 12/23 ---
   {
-    id: 'd1-arrival', day: 1, date: '12/23 (週一)', type: 'transit',
+    id: 'd1-arrival', day: 1, date: '12/23 (週二)', type: 'transit',
     location: HOTEL_LOCATION, // Added location for navigation
     transitInfo: {
       mode: TravelMode.TRAIN, duration: '約 100 分', lineName: 'N\'EX / 總武線 → 山手線', direction: '往 東京 / 新橋',
@@ -60,7 +60,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
 
   // --- Day 2: 12/24 ---
   {
-    id: 'd2-transit-lunch', day: 2, date: '12/24 (週二)', type: 'transit',
+    id: 'd2-transit-lunch', day: 2, date: '12/24 (週三)', type: 'transit',
     transitInfo: {
       mode: TravelMode.TRAIN, duration: '約 20 分', lineName: 'JR 山手線', direction: '往 東京',
       instructions: '新橋站 → JR山手線 (內回) → 有樂町站 → 步行至 Tokyo Midtown Hibiya'
@@ -141,7 +141,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
 
   // --- Day 3: 12/25 ---
   {
-    id: 'd3-transit-shinjuku', day: 3, date: '12/25 (週三)', type: 'transit',
+    id: 'd3-transit-shinjuku', day: 3, date: '12/25 (週四)', type: 'transit',
     transitInfo: { mode: TravelMode.TRAIN, duration: '約 30 分', lineName: 'JR 山手線', instructions: '新橋站 → 新宿站' },
     startTime: '10:40', endTime: '11:10',
     notes: '前往新宿'
@@ -198,7 +198,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
 
   // --- Day 4: 12/26 ---
   {
-    id: 'd4-transit-lunch', day: 4, date: '12/26 (週四)', type: 'transit',
+    id: 'd4-transit-lunch', day: 4, date: '12/26 (週五)', type: 'transit',
     transitInfo: { mode: TravelMode.TRAIN, duration: '約 35 分', lineName: '三田線 → 大江戶線', instructions: '御成門站 → 三田 (轉) → 六本木' },
     startTime: '10:50', endTime: '11:25',
     notes: '前往六本木'
@@ -268,7 +268,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
 
   // --- Day 5: 12/27 ---
   {
-    id: 'd5-checkout', day: 5, date: '12/27 (週五)', type: 'visit', startTime: '07:30', endTime: '09:00',
+    id: 'd5-checkout', day: 5, date: '12/27 (週六)', type: 'visit', startTime: '07:30', endTime: '09:00',
     location: { id: 'hotel-checkout', name: '飯店退房準備', address: 'HOTEL 1899' },
     notes: '起床 / 打包 / 退房'
   },
