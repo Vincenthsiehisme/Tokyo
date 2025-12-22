@@ -605,7 +605,8 @@ export default function App() {
         className={`relative pl-8 group transition-opacity duration-500 ${isPast && !isActive ? 'opacity-50' : 'opacity-100'}`} 
         onClick={() => setSelectedItem(item)}
       >
-        <div className={`absolute left-[0px] rounded-full border-2 border-white shadow-sm transition-transform group-hover:scale-125 ${dotClass} ${isActive ? 'animate-pulse scale-110 ring-4 ring-blue-100' : ''}`}></div>
+        {/* 🔧 修改：圓點加上 z-20 */}
+        <div className={`absolute left-[0px] rounded-full border-2 border-white shadow-sm transition-transform group-hover:scale-125 z-20 ${dotClass} ${isActive ? 'animate-pulse scale-110 ring-4 ring-blue-100' : ''}`}></div>
         
         {item.type === 'transit' && item.transitInfo ? (
            <div className="relative mb-2">
@@ -617,8 +618,9 @@ export default function App() {
                      <RouteCard info={item.transitInfo} startTime={item.startTime} />
                   </div>
                   {item.location && (
+                     {/* 🔧 修改：RouteCard 按鈕改為 z-30 */}
                      <button 
-                       className="shrink-0 w-8 h-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-tokyo-blue hover:border-tokyo-blue shadow-sm transition-colors z-10"
+                       className="shrink-0 w-8 h-8 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-tokyo-blue hover:border-tokyo-blue shadow-sm transition-colors z-30"
                        onClick={(e) => {
                          e.stopPropagation();
                          openDirections(prevLocation, item.location!);
@@ -668,7 +670,8 @@ export default function App() {
             </div>
             
             {item.location && (
-               <div className="absolute bottom-3 right-3 flex gap-2 z-20">
+               {/* 🔧 修改：卡片右下按鈕改為 z-30 */}
+               <div className="absolute bottom-3 right-3 flex gap-2 z-30">
                  <button 
                    className="w-8 h-8 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center shadow-sm border border-slate-200 hover:bg-slate-100 active:scale-90 transition-all" 
                    onClick={(e) => { 
@@ -720,7 +723,8 @@ export default function App() {
       <div className="flex-1 overflow-y-auto px-4 pt-6 relative">
         {filteredItems.length === 0 ? <div className="text-center py-12 text-gray-400"><p>這一天沒有行程</p></div> : (
           <div className="relative pl-4 space-y-6">
-            <div className="absolute left-4 top-2 bottom-4 w-[1.5px] bg-slate-200/80 z-0"></div>
+            {/* 🔧 修改：主時間線改為 -z-10 */}
+            <div className="absolute left-4 top-2 bottom-4 w-[1.5px] bg-slate-200/80 -z-10"></div>
             
             {filteredItems.map((item, index) => {
               if (item.type === 'split') {
@@ -758,7 +762,8 @@ export default function App() {
                     </div>
                     
                     <div className="relative pb-6 px-2">
-                       <div className={`absolute left-[18px] top-2 bottom-4 w-[1.5px] z-0 ${activeTab === 0 ? 'bg-purple-200' : 'bg-indigo-200'}`}></div>
+                       {/* 🔧 修改：Split 時間線改為 -z-10 */}
+                       <div className={`absolute left-[18px] top-2 bottom-4 w-[1.5px] -z-10 ${activeTab === 0 ? 'bg-purple-200' : 'bg-indigo-200'}`}></div>
                        
                        <div className="space-y-6 mt-2">
                            <div className={`relative z-10 text-xs font-bold px-3 py-1.5 mx-auto rounded-lg w-fit flex items-center shadow-sm border ${activeTab === 0 ? 'bg-purple-50 text-purple-700 border-purple-100' : 'bg-indigo-50 text-indigo-700 border-indigo-100'}`}>
