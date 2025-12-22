@@ -1,4 +1,3 @@
-
 export enum TravelMode {
   TRAIN = 'TRAIN',
   WALK = 'WALK',
@@ -38,6 +37,9 @@ export interface ItineraryItem {
   details?: string; // Rich details (address, tips, full guide)
   // For split itineraries
   splitGroups?: SplitGroup[]; 
+  // NEW: For Day 5 critical deadlines
+  strictDeadline?: string; // e.g., "15:40 關櫃"
+  warningLevel?: 'normal' | 'caution' | 'critical'; // UI color level
 }
 
 export interface SplitGroup {
