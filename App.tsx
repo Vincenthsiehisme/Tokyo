@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ItineraryItem, Location, TravelMode } from './types';
 import RouteCard from './components/RouteCard';
@@ -12,17 +11,42 @@ const HOTEL_LOCATION: Location = {
   japaneseAddress: '東京都港区新橋6-4-1' 
 };
 
+// NEW: Day 5 固定地點
+const NARITA_AIRPORT_T1: Location = {
+  id: 'nrt-t1',
+  name: '成田機場 T1',
+  address: 'Narita International Airport Terminal 1',
+  japaneseName: '成田空港 第1ターミナル',
+  japaneseAddress: '千葉県成田市三里塚御料牧場1-1'
+};
+
+const JR_NARITA_STATION: Location = {
+  id: 'jr-narita',
+  name: 'JR 成田站',
+  address: 'JR Narita Station',
+  japaneseName: 'JR成田駅',
+  japaneseAddress: '千葉県成田市花崎町839'
+};
+
+const CHOMEISEN_RESTAURANT: Location = {
+  id: 'chomeisen',
+  name: '長命泉 (蔵元直営店)',
+  address: '千葉県成田市上町540',
+  japaneseName: '長命泉',
+  japaneseAddress: '千葉県成田市上町540'
+};
+
 // Data filled with precise Start/End times for seamless transitions
 const PRESET_ITINERARY: ItineraryItem[] = [
   // --- Day 1: 12/23 ---
   {
     id: 'd1-arrival', day: 1, date: '12/23 (週二)', type: 'transit',
-    location: HOTEL_LOCATION, // Added location for navigation
+    location: HOTEL_LOCATION,
     transitInfo: {
       mode: TravelMode.TRAIN, duration: '約 100 分', lineName: 'N\'EX / 總武線 → 山手線', direction: '往 東京 / 新橋',
       instructions: '【目標 16:30 機場發車】\n1. 14:55 降落 → 預計 16:10 出關\n2. 走到 JR 車站搭 N\'EX 或 總武線快速 → 東京站 (約 17:30 抵達)\n3. 轉 JR山手線 (往品川) → 新橋站 (約 17:40 抵達)\n4. 走「烏森口 (Karasumori Exit)」步行 10 分至飯店'
     },
-    startTime: '16:10', endTime: '17:50', // Fixed
+    startTime: '16:10', endTime: '17:50',
     notes: '出關 → 前往飯店'
   },
   {
@@ -37,23 +61,23 @@ const PRESET_ITINERARY: ItineraryItem[] = [
       mode: TravelMode.TRAIN, duration: '約 55 分', lineName: '銀座線', direction: '往 淺草',
       instructions: '1. 18:20 飯店出發 → 走回新橋站 (10分)\n2. 18:35 搭 Metro 銀座線 → 田原町站\n3. 步行 15-20 分至大多福'
     },
-    startTime: '18:20', endTime: '19:15', // Fixed
+    startTime: '18:20', endTime: '19:15',
     notes: '前往淺草晚餐'
   },
   {
-    id: 'd1-dinner', day: 1, type: 'visit', startTime: '19:30', endTime: '21:30', // Fixed End Time
+    id: 'd1-dinner', day: 1, type: 'visit', startTime: '19:30', endTime: '21:30',
     isReservation: true,
     location: { id: 'otafuku', name: '淺草おden 大多福', address: '東京都台東區千束 1-6-2', japaneseName: '浅草おでん 大多福', japaneseAddress: '東京都台東区千束1-6-2' },
     notes: '★訂位時間 19:30'
   },
   {
     id: 'd1-return', day: 1, type: 'transit',
-    location: HOTEL_LOCATION, // Added location for navigation
+    location: HOTEL_LOCATION,
     transitInfo: {
       mode: TravelMode.TRAIN, duration: '約 35 分', lineName: '銀座線', direction: '往 澀谷', lastTrain: '00:08',
       instructions: '1. 從田原町站搭銀座線回新橋站\n2. 走「烏森口」步行 10 分鐘回飯店'
     },
-    startTime: '21:30', endTime: '22:05', // Fixed
+    startTime: '21:30', endTime: '22:05',
     notes: '返回飯店'
   },
   { id: 'd1-rest', day: 1, type: 'visit', startTime: '22:05', location: HOTEL_LOCATION, notes: '休息 / 結束 Day 1' },
@@ -65,12 +89,12 @@ const PRESET_ITINERARY: ItineraryItem[] = [
       mode: TravelMode.TRAIN, duration: '約 20 分', lineName: 'JR 山手線', direction: '往 東京',
       instructions: '新橋站 → JR山手線 (內回) → 有樂町站 → 步行至 Tokyo Midtown Hibiya'
     },
-    startTime: '10:55', endTime: '11:15', // Fixed
+    startTime: '10:55', endTime: '11:15',
     notes: '移動至早午餐'
   },
   {
     id: 'd2-lunch', day: 2, type: 'visit', startTime: '11:15', endTime: '13:00',
-    location: { id: 'buvette', name: 'Buvette Tokyo', address: '東京 Midtown Hibiya 1F', japaneseName: 'Buvette Tokyo', japaneseAddress: '東京都千代田区有楽町1-1-2' },
+    location: { id: 'buvette', name: 'Buvette Tokyo', address: 'Tokyo Midtown Hibiya 1F', japaneseName: 'Buvette Tokyo', japaneseAddress: '東京都千代田区有楽町1-1-2' },
     notes: '法式鄉村料理'
   },
   {
@@ -119,7 +143,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
     transitInfo: {
       mode: TravelMode.TRAIN, duration: '約 15 分', lineName: '東橫線', instructions: '中目黑 → 祐天寺 (1站) → 步行 10 分'
     },
-    startTime: '19:00', endTime: '19:20', // Buffer for 19:30 Res
+    startTime: '19:00', endTime: '19:20',
     notes: '前往燒肉晚餐'
   },
   {
@@ -129,7 +153,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
   },
   {
     id: 'd2-return', day: 2, type: 'transit',
-    location: HOTEL_LOCATION, // Added location for navigation
+    location: HOTEL_LOCATION,
     transitInfo: {
       mode: TravelMode.TRAIN, duration: '約 45 分', lineName: '東橫線 → 山手線', lastTrain: '00:27',
       instructions: '1. 步行回祐天寺站搭東橫線至澀谷\n2. 澀谷轉 JR 山手線至新橋站\n3. 步行回飯店'
@@ -186,9 +210,9 @@ const PRESET_ITINERARY: ItineraryItem[] = [
   },
   {
     id: 'd3-return', day: 3, type: 'transit',
-    location: HOTEL_LOCATION, // Added location for navigation
+    location: HOTEL_LOCATION,
     transitInfo: {
-      mode: TravelMode.WALK, duration: '約 15 分', lastTrain: '00:12', // Ginzaline last train as reference
+      mode: TravelMode.WALK, duration: '約 15 分', lastTrain: '00:12',
       instructions: '從銀座 6 丁目步行回新橋飯店，或搭一站銀座線。'
     },
     startTime: '23:00', endTime: '23:15',
@@ -256,7 +280,7 @@ const PRESET_ITINERARY: ItineraryItem[] = [
   },
   {
     id: 'd4-return', day: 4, type: 'transit',
-    location: HOTEL_LOCATION, // Added location for navigation
+    location: HOTEL_LOCATION,
     transitInfo: {
       mode: TravelMode.TRAIN, duration: '約 25 分', lineName: 'JR 京濱東北線', lastTrain: '00:15',
       instructions: '1. 大森站搭 JR 京濱東北線直達新橋站\n2. 步行回飯店'
@@ -266,50 +290,116 @@ const PRESET_ITINERARY: ItineraryItem[] = [
   },
   { id: 'd4-rest', day: 4, type: 'visit', startTime: '23:30', location: HOTEL_LOCATION, notes: '休息 / 結束 Day 4' },
 
-  // --- Day 5: 12/27 ---
+  // --- Day 5: 12/27 (完全重構版) ---
   {
-    id: 'd5-checkout', day: 5, date: '12/27 (週六)', type: 'visit', startTime: '07:30', endTime: '09:00',
-    location: { id: 'hotel-checkout', name: '飯店退房準備', address: 'HOTEL 1899' },
-    notes: '起床 / 打包 / 退房'
+    id: 'd5-checkout',
+    day: 5,
+    date: '12/27 (週六)',
+    type: 'visit',
+    startTime: '07:30',
+    endTime: '08:30',
+    location: HOTEL_LOCATION,
+    notes: '起床 / 打包 / 退房',
+    details: '請在 08:30 準時離開飯店，確保不延誤 N\'EX 班次。',
+    warningLevel: 'normal'
   },
   {
-    id: 'd5-transit-narita', day: 5, type: 'transit',
-    transitInfo: { mode: TravelMode.TRAIN, duration: '約 100 分', lineName: '山手線 → 總武線快速', instructions: '新橋 → 東京 → JR 成田站' },
-    startTime: '09:00', endTime: '10:40',
-    notes: '前往成田市區'
-  },
-  { 
-    id: 'd5-narita-city', day: 5, type: 'visit', startTime: '10:50', endTime: '13:00',
-    location: {
-      id: 'chomeisen',
-      name: '長命泉 (Sake store CYOUMEISEN)',
-      address: '千葉県成田市上町540',
-      japaneseName: '長命泉 (蔵元直営店)',
-      japaneseAddress: '千葉県成田市上町540'
+    id: 'd5-nex-to-airport',
+    day: 5,
+    type: 'transit',
+    startTime: '08:30',
+    endTime: '10:15',
+    location: NARITA_AIRPORT_T1,
+    transitInfo: {
+      mode: TravelMode.TRAIN,
+      duration: '約 105 分',
+      lineName: 'JR 山手線 → N\'EX',
+      direction: '往 成田機場',
+      instructions: '1. 新橋站搭 JR 山手線至東京站 (約 10 分)\n2. 東京站轉乘 N\'EX 成田特快 (約 60 分)\n3. 抵達成田機場 T1 地下車站 (10:15)',
+      cost: '¥3,070'
     },
-    notes: '清酒試飲 & 鰻魚飯午餐',
-    details: '成田山表參道上的知名酒造，提供清酒試飲與鰻魚飯。'
+    notes: '前往成田機場 T1',
+    warningLevel: 'normal'
   },
-  { 
-    id: 'd5-transit-airport', day: 5, type: 'transit',
-    transitInfo: { mode: TravelMode.TRAIN, duration: '約 30 分', lineName: 'JR/京成', instructions: '成田站 → 成田機場' },
-    startTime: '13:00', endTime: '13:30',
+  {
+    id: 'd5-luggage-storage',
+    day: 5,
+    type: 'visit',
+    startTime: '10:15',
+    endTime: '11:15',
+    location: NARITA_AIRPORT_T1,
+    notes: '⚠️ 寄放行李（大型置物櫃）',
+    details: '**置物櫃攻略：**\n• 位置：T1 地下車站出口附近（B1F）\n• 大型行李櫃：600-700 円 / 日\n• 前 6 小時最划算\n• ⚠️ 記得拍照櫃號與位置！\n• 建議尋找靠近電梯的櫃位，回程取行李較方便',
+    warningLevel: 'caution'
   },
-  { 
-    id: 'd5-airport', day: 5, type: 'visit', startTime: '13:30',
-    location: {
-      id: 'nrt-airport',
-      name: '成田國際機場 (NRT)',
-      address: 'Narita International Airport',
-      japaneseName: '成田国際空港',
+  {
+    id: 'd5-transit-narita-city',
+    day: 5,
+    type: 'transit',
+    startTime: '11:15',
+    endTime: '11:35',
+    location: JR_NARITA_STATION,
+    transitInfo: {
+      mode: TravelMode.TRAIN,
+      duration: '約 11-16 分',
+      lineName: 'JR 成田線',
+      direction: '往 佐倉',
+      instructions: '機場 T1 地下車站 → JR 成田站 (僅 1 站)\n月台：B1F 第 5-6 號月台',
+      cost: '¥260'
     },
-    notes: '辦理登機 (16:30 起飛)',
-    details: '建議於起飛前 3 小時抵達機場。逛免稅店、最後採買。'
+    notes: '前往 JR 成田站',
+    warningLevel: 'normal'
+  },
+  {
+    id: 'd5-chomeisen-lunch',
+    day: 5,
+    type: 'visit',
+    startTime: '11:45',
+    endTime: '13:20',
+    location: CHOMEISEN_RESTAURANT,
+    notes: '⚠️ 清酒試飲 & 鰻魚飯（13:20 必須離開）',
+    details: '**長命泉酒藏直營店：**\n• 地點：成田山表參道（JR 成田站東口徒步 10 分）\n• 推薦：清酒試飲套組 + 鰻魚飯套餐\n• 營業時間：10:00-17:00\n\n⚠️ **絕對撤退時間：13:20**\n• 13:20 必須結帳離開餐廳\n• 13:35 前走回 JR 成田站\n• 逾時將無法趕上 Peach 15:40 關櫃！',
+    strictDeadline: '13:20 必須出發',
+    warningLevel: 'critical'
+  },
+  {
+    id: 'd5-return-airport',
+    day: 5,
+    type: 'transit',
+    startTime: '13:20',
+    endTime: '14:00',
+    location: NARITA_AIRPORT_T1,
+    transitInfo: {
+      mode: TravelMode.TRAIN,
+      duration: '約 30-40 分',
+      lineName: 'JR 成田線',
+      direction: '往 空港第2ビル',
+      instructions: '1. 步行回 JR 成田站（15 分內）\n2. 搭乘成田線回機場 T1（11-16 分）\n3. 前往 B1 置物櫃取行李（15 分）\n4. 搭電梯至 T1 國際線 4F 出境大廳\n5. 14:00 前務必抵達 Peach 櫃檯',
+      cost: '¥260',
+      lastTrain: '13:48'
+    },
+    notes: '⚠️ 返回機場 T1（14:00 前抵達）',
+    details: '**重要提醒：**\n• 最晚搭乘班次：13:48 發車\n• 建議搭乘：13:35-13:40 之間班次\n• 給予取行李 + 移動的緩衝時間',
+    strictDeadline: '13:48 最後班車',
+    warningLevel: 'critical'
+  },
+  {
+    id: 'd5-peach-checkin',
+    day: 5,
+    type: 'visit',
+    startTime: '14:00',
+    endTime: '16:30',
+    isReservation: true,
+    location: NARITA_AIRPORT_T1,
+    notes: '🍑 Peach 樂桃航空報到 & 登機',
+    details: '**Peach MM626 航班資訊：**\n• 航班：MM626 成田 (NRT) → 桃園 (TPE)\n• 報到櫃檯：T1 南翼 4F (Check-in Counter L)\n• 開櫃時間：14:00\n• ⚠️ **關櫃時間：15:40（嚴格執行，逾時無法登機）**\n• 登機時間：16:00\n• 起飛時間：16:30\n\n**建議流程：**\n1. 14:00-14:30：報到 + 託運行李\n2. 14:30-15:00：通過安檢\n3. 15:00-15:30：通過海關 + 逛免稅店\n4. 15:30-16:00：前往登機門候機\n5. 16:00：開始登機\n\n⚠️ **Peach 為廉航，準點要求嚴格！**\n建議 14:30 前完成報到手續。',
+    strictDeadline: '15:40 關櫃（嚴格執行）',
+    warningLevel: 'critical'
   }
 ];
 
 // Version control for storage
-const DATA_VERSION = 'v16'; 
+const DATA_VERSION = 'v18'; 
 const STORAGE_KEY = 'tokyo_sync_data_master'; 
 
 export default function App() {
@@ -318,8 +408,6 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Compare version number. If it matches, use stored data.
-        // If mismatch (new code version), we skip this and fall through to return PRESET_ITINERARY
         if (parsed.version === DATA_VERSION && parsed.items && parsed.items.length > 0) {
           return parsed.items;
         }
@@ -327,14 +415,12 @@ export default function App() {
         console.error("Failed to parse saved itinerary", e);
       }
     }
-    // Default fallback (uses new preset data)
     return PRESET_ITINERARY;
   });
 
   const [activeDay, setActiveDay] = useState<number>(1);
   const [selectedItem, setSelectedItem] = useState<ItineraryItem | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
-  // Stores the active tab index for each split item by ID
   const [activeSplitTabs, setActiveSplitTabs] = useState<Record<string, number>>({});
   
   useEffect(() => {
@@ -343,7 +429,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Save items WITH version number
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ 
       version: DATA_VERSION,
       items 
@@ -365,9 +450,6 @@ export default function App() {
     window.open(url, '_blank');
   };
 
-  /**
-   * Generates a Google Maps Direction URL from origin to destination
-   */
   const openDirections = (origin: Location, destination: Location) => {
     const start = origin.japaneseAddress || origin.address || origin.name;
     const end = destination.japaneseAddress || destination.address || destination.name;
@@ -375,31 +457,64 @@ export default function App() {
     window.open(url, '_blank');
   };
 
-  /**
-   * Finding the previous logical location for A-to-B navigation
-   */
   const findPreviousLocation = (currentIndex: number, currentList: ItineraryItem[], parentSplitPrevious?: Location): Location => {
-    // If it's the first item of the day, origin is Hotel
     if (currentIndex === 0) return parentSplitPrevious || HOTEL_LOCATION;
-
-    // Search backwards for the nearest visit/meetup/split location
     for (let i = currentIndex - 1; i >= 0; i--) {
       const item = currentList[i];
       if (item.location) return item.location;
     }
-
     return parentSplitPrevious || HOTEL_LOCATION;
+  };
+
+  // NEW: Warning Level 視覺樣式
+  const getWarningStyle = (level?: 'normal' | 'caution' | 'critical') => {
+    switch(level) {
+      case 'critical':
+        return {
+          cardClass: 'bg-red-50 border-red-300 shadow-md',
+          iconBgClass: 'bg-red-100 text-red-600',
+          dotClass: 'bg-red-500 animate-pulse w-4 h-4 left-[8px] top-5'
+        };
+      case 'caution':
+        return {
+          cardClass: 'bg-yellow-50 border-yellow-300 shadow-sm',
+          iconBgClass: 'bg-yellow-100 text-yellow-700',
+          dotClass: 'bg-yellow-500 w-3.5 h-3.5 left-[9px] top-6'
+        };
+      default:
+        return {
+          cardClass: 'bg-white border-gray-100 shadow-sm hover:shadow-md',
+          iconBgClass: 'bg-blue-50 text-tokyo-blue',
+          dotClass: 'bg-tokyo-blue w-3.5 h-3.5 left-[9px] top-6'
+        };
+    }
+  };
+
+  // NEW: 計算距離死線還有多久
+  const getTimeUntilDeadline = (deadlineTime: string) => {
+    const [h, m] = deadlineTime.split(':').map(Number);
+    const deadline = new Date();
+    deadline.setHours(h, m, 0);
+    
+    const now = new Date();
+    const diffMinutes = Math.floor((deadline.getTime() - now.getTime()) / 60000);
+    
+    if (diffMinutes < 0) return { text: '已超過截止時間！', level: 'critical' };
+    if (diffMinutes < 30) return { text: `⚠️ 僅剩 ${diffMinutes} 分鐘！`, level: 'critical' };
+    if (diffMinutes < 60) return { text: `還有 ${diffMinutes} 分鐘`, level: 'caution' };
+    const hours = Math.floor(diffMinutes / 60);
+    const mins = diffMinutes % 60;
+    return { text: `還有 ${hours} 小時 ${mins} 分`, level: 'normal' };
   };
 
   const currentDayLabel = filteredItems.find(i => i.date)?.date || `Day ${activeDay}`;
 
-  // Helper to calculate status of the day relative to Today (ignoring time)
   const getDayStatus = (items: ItineraryItem[]) => {
     const dateItem = items.find(i => i.date);
-    if (!dateItem || !dateItem.date) return 'TODAY'; // Fallback
+    if (!dateItem || !dateItem.date) return 'TODAY';
     
     const now = new Date();
-    const currentYear = now.getFullYear(); // Uses system year
+    const currentYear = now.getFullYear();
     const match = dateItem.date.match(/(\d+)\/(\d+)/);
     
     if (!match) return 'TODAY';
@@ -407,7 +522,6 @@ export default function App() {
     const month = parseInt(match[1], 10);
     const day = parseInt(match[2], 10);
     
-    // Create dates at midnight for comparison
     const targetDate = new Date(currentYear, month - 1, day);
     const today = new Date(currentYear, now.getMonth(), now.getDate());
     
@@ -432,7 +546,6 @@ export default function App() {
   };
 
   const renderTimelineItem = (item: ItineraryItem, index: number, currentList: ItineraryItem[], theme: 'default' | 'purple' | 'indigo' = 'default', parentSplitPrevious?: Location) => {
-    // Date-aware Status Logic
     let isPast = false;
     let isActive = false;
 
@@ -441,7 +554,6 @@ export default function App() {
     } else if (currentDayStatus === 'FUTURE') {
       isPast = false;
     } else {
-      // TODAY: Use strict time logic
       if (item.startTime) {
         const startPassed = isTimeInPast(item.startTime);
         let endPassed = false;
@@ -449,7 +561,6 @@ export default function App() {
         if (item.endTime) {
            endPassed = isTimeInPast(item.endTime);
         } else {
-           // Implicit 30 min duration
            const startMins = timeToMinutes(item.startTime);
            const nowMins = currentTime.getHours() * 60 + currentTime.getMinutes();
            endPassed = nowMins >= (startMins + 30);
@@ -463,27 +574,23 @@ export default function App() {
       }
     }
 
-    let dotClass = 'bg-tokyo-blue';
-    let cardClass = 'bg-white border-gray-100 shadow-sm hover:shadow-md'; // Increased standard card shadow
-    let iconBgClass = 'bg-blue-50 text-tokyo-blue';
+    // 使用 warningLevel 決定樣式
+    const warningStyles = getWarningStyle(item.warningLevel);
+    let dotClass = warningStyles.dotClass;
+    let cardClass = warningStyles.cardClass;
+    let iconBgClass = warningStyles.iconBgClass;
     
     if (theme === 'purple') {
-      dotClass = 'bg-purple-500';
+      dotClass = 'bg-purple-500 w-3.5 h-3.5 left-[9px] top-6';
       iconBgClass = 'bg-purple-50 text-purple-600';
     } else if (theme === 'indigo') {
-      dotClass = 'bg-indigo-500';
+      dotClass = 'bg-indigo-500 w-3.5 h-3.5 left-[9px] top-6';
       iconBgClass = 'bg-indigo-50 text-indigo-600';
     }
 
-    if (item.type === 'transit') dotClass = 'bg-slate-300 w-2 h-2 left-[11px] top-4 ring-2 ring-white'; // Smaller dot
-    else if (item.isReservation) dotClass = 'bg-amber-500 w-4 h-4 left-[8px] top-5';
-    else if (item.type === 'meetup') dotClass = 'bg-orange-500';
-    else {
-      if (theme === 'default') dotClass = 'bg-tokyo-blue w-3.5 h-3.5 left-[9px] top-6';
-      else dotClass = `${dotClass} w-3.5 h-3.5 left-[9px] top-6`;
-    }
-
-    if (item.isReservation) {
+    if (item.type === 'transit') dotClass = 'bg-slate-300 w-2 h-2 left-[11px] top-4 ring-2 ring-white';
+    else if (item.isReservation) {
+      dotClass = 'bg-amber-500 w-4 h-4 left-[8px] top-5';
       cardClass = 'bg-amber-50 border-amber-300 shadow-sm';
       iconBgClass = 'bg-amber-100 text-amber-600';
     } else if (item.type === 'meetup') {
@@ -525,15 +632,24 @@ export default function App() {
            </div>
         ) : (
           <div className={`relative rounded-xl border overflow-hidden cursor-pointer transition-all active:scale-[0.98] ${cardClass} ${isActive ? 'border-tokyo-blue ring-2 ring-tokyo-blue/10' : ''}`}>
-            {item.isReservation && (
+            {/* Strict Deadline Badge */}
+            {item.strictDeadline && (
+              <div className="absolute top-0 left-0 right-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 flex items-center gap-1 justify-center z-20">
+                <ShieldAlert className="w-3 h-3" />
+                {item.strictDeadline}
+              </div>
+            )}
+            
+            {item.isReservation && !item.strictDeadline && (
               <div className="absolute top-0 right-4 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-b shadow-sm z-10">RESERVED</div>
             )}
-            <div className={`p-4 flex gap-3 ${item.isReservation ? 'pr-20' : ''}`}>
+            
+            <div className={`p-4 flex gap-3 ${item.isReservation || item.strictDeadline ? 'pt-6' : ''} ${item.isReservation && !item.strictDeadline ? 'pr-20' : ''}`}>
               <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center shadow-sm ${iconBgClass}`}>
                  {item.isReservation ? <Ticket className="w-5 h-5" /> : item.type === 'meetup' ? <Users className="w-5 h-5" /> : item.location?.id?.includes('hotel') ? <Hotel className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
               </div>
               <div className="flex-1 min-w-0">
-                <div className={`text-xs font-bold mb-0.5 flex flex-wrap items-center gap-1 ${isActive ? 'text-tokyo-blue' : item.isReservation ? 'text-amber-700' : 'text-slate-400'}`}>
+                <div className={`text-xs font-bold mb-0.5 flex flex-wrap items-center gap-1 ${isActive ? 'text-tokyo-blue' : item.warningLevel === 'critical' ? 'text-red-700' : item.isReservation ? 'text-amber-700' : 'text-slate-400'}`}>
                   <Clock className="w-3 h-3 mr-1" />
                   <span>{item.startTime} <span className="text-[10px] opacity-80 uppercase">抵達</span></span>
                   {item.endTime && (
@@ -544,17 +660,15 @@ export default function App() {
                   )}
                   {isActive && <span className="ml-2 bg-tokyo-blue text-white px-1.5 py-0.5 rounded-full text-[9px] animate-pulse">LIVE</span>}
                 </div>
-                <h3 className={`font-bold text-lg leading-tight truncate ${item.isReservation ? 'text-amber-900' : 'text-slate-800'}`}>
+                <h3 className={`font-bold text-lg leading-tight truncate ${item.warningLevel === 'critical' ? 'text-red-900' : item.isReservation ? 'text-amber-900' : 'text-slate-800'}`}>
                   {item.location?.name || '未命名行程'}
                 </h3>
-                <p className={`text-sm mt-1 truncate ${item.isReservation ? 'text-amber-800/70' : 'text-slate-500'}`}>{item.notes}</p>
+                <p className={`text-sm mt-1 truncate ${item.warningLevel === 'critical' ? 'text-red-800/70' : item.isReservation ? 'text-amber-800/70' : 'text-slate-500'}`}>{item.notes}</p>
               </div>
             </div>
             
-            {/* Contextual Smart Buttons */}
             {item.location && (
                <div className="absolute bottom-3 right-3 flex gap-2 z-20">
-                 {/* Route Button (A to B) */}
                  <button 
                    className="w-8 h-8 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center shadow-sm border border-slate-200 hover:bg-slate-100 active:scale-90 transition-all" 
                    onClick={(e) => { 
@@ -565,7 +679,6 @@ export default function App() {
                  >
                    <Route className="w-4 h-4" />
                  </button>
-                 {/* Map Button (Just B) */}
                  <button 
                    className="w-8 h-8 bg-blue-50 text-tokyo-blue rounded-full flex items-center justify-center shadow-sm border border-blue-100 hover:bg-blue-100 active:scale-90 transition-all" 
                    onClick={(e) => { 
@@ -619,7 +732,6 @@ export default function App() {
 
                 return (
                   <div key={item.id} className="relative z-10 pl-0 mt-6 mb-8 bg-slate-100/50 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                    {/* Split Card Header - Adjusted background for grouping */}
                     <div className="bg-slate-200/40 p-3 border-b border-slate-200 flex items-center justify-between">
                        <div className="flex items-center gap-2">
                           <div className="bg-white p-1.5 rounded-lg border border-gray-200 shadow-sm"><Split className="w-4 h-4 text-gray-500" /></div>
@@ -627,7 +739,6 @@ export default function App() {
                        </div>
                     </div>
 
-                    {/* Tab Switcher */}
                     <div className="p-3">
                        <div className="flex bg-white/50 p-1 rounded-xl border border-slate-100">
                           {item.splitGroups?.map((group, idx) => {
@@ -639,16 +750,14 @@ export default function App() {
                                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${isActive ? 'bg-white shadow-sm text-tokyo-blue ring-1 ring-black/5' : 'text-gray-400 hover:text-gray-600'}`}
                                >
                                   <Users className={`w-3 h-3 ${isActive ? 'text-tokyo-blue' : 'text-gray-400'}`} />
-                                  {group.name.split('：')[0]} {/* Simplified Name */}
+                                  {group.name.split('：')[0]}
                                </button>
                              );
                           })}
                        </div>
                     </div>
                     
-                    {/* Active Itinerary Content */}
                     <div className="relative pb-6 px-2">
-                       {/* Timeline Guide - Independent within split group */}
                        <div className={`absolute left-[18px] top-2 bottom-4 w-[1.5px] z-0 ${activeTab === 0 ? 'bg-purple-200' : 'bg-indigo-200'}`}></div>
                        
                        <div className="space-y-6 mt-2">
@@ -673,12 +782,11 @@ export default function App() {
       {selectedItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedItem(null)}>
           <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-            {/* Modal Header */}
-            <div className={`p-5 text-white shrink-0 ${selectedItem.isReservation ? 'bg-amber-500' : selectedItem.type === 'transit' ? 'bg-slate-700' : selectedItem.type === 'meetup' ? 'bg-orange-500' : selectedItem.type === 'split' ? 'bg-purple-600' : 'bg-tokyo-blue'}`}>
+            <div className={`p-5 text-white shrink-0 ${selectedItem.warningLevel === 'critical' ? 'bg-red-600' : selectedItem.isReservation ? 'bg-amber-500' : selectedItem.type === 'transit' ? 'bg-slate-700' : selectedItem.type === 'meetup' ? 'bg-orange-500' : selectedItem.type === 'split' ? 'bg-purple-600' : 'bg-tokyo-blue'}`}>
               <div className="flex justify-between items-start">
                 <div>
                   <div className="opacity-80 text-xs font-semibold tracking-wider mb-1 uppercase">
-                    {selectedItem.isReservation ? '預約行程' : selectedItem.type === 'transit' ? '交通行程' : '行程詳細'}
+                    {selectedItem.warningLevel === 'critical' ? '⚠️ 關鍵行程' : selectedItem.isReservation ? '預約行程' : selectedItem.type === 'transit' ? '交通行程' : '行程詳細'}
                   </div>
                   <h2 className="text-xl font-bold">{selectedItem.location?.name || selectedItem.transitInfo?.lineName || '行程'}</h2>
                 </div>
@@ -690,6 +798,27 @@ export default function App() {
             </div>
 
             <div className="p-6 overflow-y-auto">
+              {/* Deadline Countdown */}
+              {selectedItem.strictDeadline && selectedItem.endTime && (
+                <div className="mb-6 bg-red-50 border-2 border-red-300 p-4 rounded-xl">
+                  <div className="flex items-start gap-3">
+                    <ShieldAlert className="w-6 h-6 text-red-600 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="text-red-900 font-bold text-sm mb-1">絕對死線警告</h4>
+                      <p className="text-red-700 text-xs mb-2">{selectedItem.strictDeadline}</p>
+                      {(() => {
+                        const countdown = getTimeUntilDeadline(selectedItem.endTime!);
+                        return (
+                          <div className={`text-sm font-bold ${countdown.level === 'critical' ? 'text-red-600' : countdown.level === 'caution' ? 'text-yellow-700' : 'text-gray-700'}`}>
+                            {countdown.text}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Last Train Warning */}
               {selectedItem.transitInfo?.lastTrain && (
                 <div className="mb-6 bg-red-50 border border-red-200 p-4 rounded-xl flex gap-3">
@@ -701,7 +830,7 @@ export default function App() {
                 </div>
               )}
 
-              {/* A to B Navigation Section (Smart Suggestion) */}
+              {/* A to B Navigation */}
               {selectedItem.location && (
                 <div className="mb-6">
                   <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">A to B 智慧導航</h4>
@@ -711,15 +840,12 @@ export default function App() {
                       <ArrowRight className="w-3 h-3 text-blue-300" />
                       <span className="bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm">目的地</span>
                     </div>
-                    {/* Compute prev location for this modal specifically */}
                     {(() => {
-                        // Finding where selectedItem is in the overall items for directions
                         let idx = filteredItems.findIndex(i => i.id === selectedItem.id);
                         let prev = HOTEL_LOCATION;
                         if (idx !== -1) {
                             prev = findPreviousLocation(idx, filteredItems);
                         } else {
-                            // Might be in a split
                             for (const split of filteredItems.filter(i => i.type === 'split')) {
                                 for (const group of split.splitGroups || []) {
                                     const subIdx = group.itinerary.findIndex(i => i.id === selectedItem.id);
@@ -756,7 +882,7 @@ export default function App() {
                 <div className="mb-6">
                   <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">景點地址</h4>
                   <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <p className="font-semibold">{selectedItem.location.japaneseName}</p>
+                    <p className="font-semibold">{selectedItem.location.japaneseName || selectedItem.location.name}</p>
                     <p className="text-xs text-gray-500 mt-1">{selectedItem.location.japaneseAddress || selectedItem.location.address}</p>
                   </div>
                 </div>
